@@ -241,19 +241,12 @@ def main(args):
             keypoints=smpl_joints2d,
             crop_size=224,
         )
-        sx,sy,tx, ty = orig_cam
-        weakCam = WeakPerspectiveCamera(
-            scale=[sx, sy],
-            translation=[tx, ty],
-            zfar=1000.
-        )
-        orig_cam_matrix = weakCam.get_projection_matrix()
+
         
 
         output_dict = {
             'pred_cam': pred_cam,
             'orig_cam': orig_cam,
-            'orig_cam_matrix' : orig_cam_matrix,
             'verts': pred_verts,
             'pose': pred_pose,
             'betas': pred_betas,
@@ -278,7 +271,7 @@ def main(args):
 
     print(f'Saving output results to \"{os.path.join(output_path, "vibe_output.pkl")}\".')
 
-    joblib.dump(vibe_results, os.path.join(output_path, "vibe_output.pkl"))
+   
 
     if not args.no_render:
         # ========= Render results as a single video ========= #
@@ -327,6 +320,15 @@ def main(args):
                     mesh_filename=mesh_filename,
                 )
 
+                sx,sy,tx, ty = frame_cam
+                weakCam = WeakPerspectiveCamera(
+                    scale=[sx, sy],
+                    translation=[tx, ty],
+                    zfar=1000.
+                )
+                orig_cam_matrix = weakCam.get_projection_matrix()
+                vibe_results[person_id][frame_idx]['orig_cam_matrix'] = orig_cam_matrix
+
                 if args.sideview:
                     side_img = renderer.render(
                         side_img,
@@ -359,6 +361,8 @@ def main(args):
         shutil.rmtree(output_img_folder)
 
     shutil.rmtree(image_folder)
+
+    joblib.dump(vibe_results, os.path.join(output_path, "vibe_output.pkl"))
     print('================= END =================')
 
 
