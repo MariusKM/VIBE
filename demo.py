@@ -327,7 +327,7 @@ def main(args):
                     zfar=1000.
                 )
                 orig_cam_matrix = weakCam.get_projection_matrix()
-                vibe_results[person_id][frame_idx]['orig_cam_matrix'] = orig_cam_matrix
+                vibe_results[str(person_id)][str(frame_idx)]['orig_cam_matrix'] = orig_cam_matrix
 
                 if args.sideview:
                     side_img = renderer.render(
