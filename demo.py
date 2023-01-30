@@ -30,7 +30,7 @@ from multi_person_tracker import MPT
 from torch.utils.data import DataLoader
 
 from lib.models.vibe import VIBE_Demo
-from lib.utils.renderer import Renderer
+from lib.utils.renderer import Renderer, WeakPerspectiveCamera
 from lib.dataset.inference import Inference
 from lib.utils.smooth_pose import smooth_pose
 from lib.data_utils.kp_utils import convert_kps
@@ -241,10 +241,19 @@ def main(args):
             keypoints=smpl_joints2d,
             crop_size=224,
         )
+        sx,sy,tx, ty = orig_cam
+        weakCam = WeakPerspectiveCamera(
+            scale=[sx, sy],
+            translation=[tx, ty],
+            zfar=1000.
+        )
+        orig_cam_matrix = weakCam.get_projection_matrix()
+        
 
         output_dict = {
             'pred_cam': pred_cam,
             'orig_cam': orig_cam,
+            'orig_cam_matrix' : orig_cam_matrix,
             'verts': pred_verts,
             'pose': pred_pose,
             'betas': pred_betas,
